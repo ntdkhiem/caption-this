@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+    frontend:
+        command: python -m ptvsd --host 0.0.0.0 --port 5680 --multiprocess --wait manage.py run -h 0.0.0.0 -p 5000
+        ports:
+            - "81:5000"
+            - "5680:5680"
+        env_file:
+            - ./.env.prod
+    game:
+        command: python -m ptvsd --host 0.0.0.0 --port 5679 --multiprocess --wait manage.py run -h 0.0.0.0 -p 5000
+        ports:
+            # - "80:5000"
+            - "5679:5679"
+        env_file:
+            - ./.env.prod
