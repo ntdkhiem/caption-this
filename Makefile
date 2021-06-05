@@ -54,6 +54,15 @@ frontend-down:
 frontend-debug:
 	@docker-compose -f docker-compose.yml -f docker-compose.debug.yml up -d --build frontend
 
+traefik-up:
+	@docker-compose -f docker-compose.traefik.yml up -d --build
+
+traefik-down:
+	@docker-compose -f docker-compose.traefik.yml down -v
+
+
+
+
 # to test-run interactive alpine session
 # docker run -it -v "$(pwd):/app" alpine /bin/sh
 

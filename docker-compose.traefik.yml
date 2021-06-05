@@ -1,0 +1,104 @@
+version: '3.8'
+
+networks:
+    local-network:
+        driver: bridge
+
+services:
+    traefik:
+        image: 'traefik:v2.4'
+        command:
+            - "--providers.docker=true"
+            - "--api.insecure=true"
+            - "--accesslog"
+            # - "--log.level=DEBUG"
+        ports:
+            - "8080:80"
+            - "8081:8080"
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        networks:
+            - local-network
+    frontend:
+        build:
+            context: ./services/frontend
+            target: base
+        command: python manage.py run -h 0.0.0.0 -p 5000
+        env_file:
+            - ./.env.dev
+        networks:
+            - local-network
+        labels:
+            - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+            # Tell Traefik to use port 5000 to communicate with frontend
+            - "traefik.http.services.frontend-svc.loadbalancer.server.port=5000"
+    game:
+        build:
+            context: ./services/game
+            target: base
+        command: python manage.py run -h 0.0.0.0 -p 5000
+        env_file:
+            - ./.env.dev
+        networks:
+            - local-network
+        depends_on:
+            - redis
+            - memegen
+        labels:
+            - "traefik.http.routers.game.rule=PathPrefix(`/socket.io`)"
+            - "traefik.http.services.game-svc.loadbalancer.server.port=5000"
+            - "traefik.http.services.game-svc.loadbalancer.sticky.cookie=true"
+            - "traefik.http.services.game-svc.loadbalancer.sticky.cookie.name=io"
+            # - "traefik.http.services.game-svc.loadbalancer.sticky.cookie.httponly=true"
+            - "traefik.http.services.game-svc.loadbalancer.sticky.cookie.secure=true"
+            - "traefik.http.services.game-svc.loadbalancer.sticky.cookie.samesite=io"
+    celery:
+        build:
+            context: ./services/game
+            target: base
+        command: ["/bin/sh", "-c", "./celery.sh"]
+        networks:
+            - local-network
+        env_file:
+            - ./.env.dev
+        labels:
+            - "traefik.enable=false"
+    memegen:
+        build:
+            context: ./services/memegen
+            target: base
+        command: python run.py
+        expose:
+            - 5000
+        env_file:
+            - ./.env.dev
+        networks:
+            - local-network
+        volumes:
+            - memes_dir:/usr/src/app/images
+        labels:
+            # - "traefik.enable=false"
+            - "traefik.http.routers.game.rule=PathPrefix(`/images/preview`)"
+    nginx:
+        build:
+            context: ./services/nginx
+            target: traefik
+        depends_on:
+            - memegen
+        networks:
+            - local-network
+        volumes:
+            - memes_dir:/usr/src/app/images
+        labels:
+            - "traefik.http.routers.game.rule=PathPrefix(`/image`)"
+    redis:
+        command: ["redis-server", "--bind", "redis", "--port", "6379"]
+        image: redis:6.2
+        expose:
+            - 6379
+        networks:
+            - local-network
+        labels:
+            - "traefik.enable=false"
+volumes:
+    memes_dir:
