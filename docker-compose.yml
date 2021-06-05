@@ -4,13 +4,13 @@ networks:
     local-network:
         driver: bridge
 services:
-    frontend:
-        build:
-            context: ./services/frontend
-        expose:
-            - 5000
-        networks:
-            - local-network
+    # frontend:
+    #     build:
+    #         context: ./services/frontend
+    #     expose:
+    #         - 5000
+    #     networks:
+    #         - local-network
     game:
         build:
             context: ./services/game
@@ -40,16 +40,16 @@ services:
             context: ./services/nginx
             target: base
         ports:
-            - 80:80
+            - 8080:80
         depends_on:
-            - frontend
+            # - frontend
             - game
             - memegen
         networks:
             - local-network
     redis:
         command: ["redis-server", "--bind", "redis", "--port", "6379"]
-        image: redis:6.2
+        image: redis:6.2-alpine
         expose:
             - 6379
         networks:
