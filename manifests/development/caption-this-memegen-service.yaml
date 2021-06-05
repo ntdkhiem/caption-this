@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  # this name will be use by other services (not the name of the deployment)
+  name: memegen
+  labels:
+    app: memegen
+spec:
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+  selector:
+    app: memegen

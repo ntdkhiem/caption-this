@@ -1,0 +1,13 @@
+# Telling ingress controller to not terminate the http connection since websocket is an http request with upgrade header
+# link: https://cloud.google.com/load-balancing/docs/backend-service#timeout-setting
+apiVersion: cloud.google.com/v1beta1
+kind: BackendConfig
+metadata:
+  name: game-backend-config
+spec:
+  sessionAffinity:
+    affinityType: "CLIENT_IP"
+  # This determines how long websocket will last (in seconds)
+  timeoutSec: 10800
+  connectionDraining:
+    drainingTimeoutSec: 600

@@ -1,0 +1,24 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: caption-this-ingress
+  # This will allow you to keep using the Long Poll > Upgrade to WS default method for Socket IO.
+  # According to https://www.cheynewallace.com/how-to-use-web-sockets-socket-io-with-digital-ocean-load-balancers-and-kubernetes-with-ingress-nginx/
+  annotations:
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "route"
+    nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
+    nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
+  labels:
+      name: caption-this-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          serviceName: game
+          servicePort: 5000
+      - path: "/images/preview"
+        backend:
+          serviceName: memegen
+          servicePort: 5000

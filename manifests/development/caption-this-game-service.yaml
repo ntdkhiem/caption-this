@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  # this name will be use by other services (not the name of the deployment)
+  name: game
+  labels:
+    app: game
+  annotations:
+    cloud.google.com/backend-config: '{"ports": {"5000":"game-backend-config"}}'
+spec:
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+  selector:
+    app: game

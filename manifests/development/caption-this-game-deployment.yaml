@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: game-deployment
+  labels:
+    app: game
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: game
+  template:
+    metadata:
+      labels:
+        app: game
+    spec:
+      # volumes:
+      #   - name: assets-volume
+      #     persistentVolumeClaim:
+      #       claimName: memegen-pvc
+      containers:
+        - name: game
+          image: gcr.io/dev-airlock-311420/game:v1.2
+          command: ["python"]
+          args: ["manage.py", "run", "-h", "0.0.0.0", "-p", "5000"]
+          # volumeMounts:
+          #   - mountPath: "/usr/src/app/images"
+          #     name: assets-volume
+          env:
+            - name: FLASK_SECRET_KEY
+              valueFrom:
+                  secretKeyRef:
+                    name: caption-this-secret
+                    key: FLASK_SECRET_KEY
+            - name: SENTRY_DNS
+              valueFrom:
+                  secretKeyRef:
+                    name: caption-this-secret
+                    key: SENTRY_DNS
+            - name: FLASK_ENV
+              valueFrom:
+                  configMapKeyRef:
+                    name: caption-this-configmap
+                    key: FLASK_ENV
+            - name: REDIS_UR
+              valueFrom:
+                  configMapKeyRef:
+                    name: caption-this-configmap
+                    key: REDIS_URL
+            - name: MESSAGE_QUEUE_URL
+              valueFrom:
+                  configMapKeyRef:
+                    name: caption-this-configmap
+                    key: MESSAGE_QUEUE_URL
+            - name: CELERY_BROKER_URL
+              valueFrom:
+                  configMapKeyRef:
+                    name: caption-this-configmap
+                    key: CELERY_BROKER_URL
+            - name: IMAGES_DIRECTORY
+              value: "/usr/src/app/images/"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            # wait before performing the first probe
+            initialDelaySeconds: 10
+            # liveness probe every second
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 5000
+            # wait before performing the first probe
+            initialDelaySeconds: 10
+            # readiness probe every second
+            periodSeconds: 3
+          ports:
+            - containerPort: 5000
+          resources:
+            requests:
+              cpu: "300m"
+              memory: "500Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"

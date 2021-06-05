@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-deployment
+  labels:
+    app: celery
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: celery
+  template:
+    metadata:
+      labels:
+        app: celery
+    spec:
+      containers:
+        - name: celery
+          image: gcr.io/dev-airlock-311420/game:v1.2
+          command: ["/bin/sh"]
+          args: ["-c", "./celery.sh"]
+          env:
+            - name: FLASK_SECRET_KEY
+              valueFrom:
+                  secretKeyRef:
+                    name: caption-this-secret
+                    key: FLASK_SECRET_KEY
+            - name: SENTRY_DNS
+              valueFrom:
+                  secretKeyRef:
+                    name: caption-this-secret
+                    key: SENTRY_DNS
+            - name: FLASK_ENV
+              valueFrom:
+                  configMapKeyRef:
+                    name: caption-this-configmap
+                    key: FLASK_ENV
+            - name: REDIS_UR
+              valueFrom:
+                  configMapKeyRef:
+                    name: caption-this-configmap
+                    key: REDIS_URL
+            - name: MESSAGE_QUEUE_URL
+              valueFrom:
+                  configMapKeyRef:
+                    name: caption-this-configmap
+                    key: MESSAGE_QUEUE_URL
+            - name: CELERY_BROKER_URL
+              valueFrom:
+                  configMapKeyRef:
+                    name: caption-this-configmap
+                    key: CELERY_BROKER_URL
+          resources:
+              requests:
+                memory: "500Mi"
+                cpu: "200m"
+              limits:
+                memory: "1Gi"
+                cpu: "400m" 

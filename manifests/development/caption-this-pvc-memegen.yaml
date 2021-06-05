@@ -1,0 +1,14 @@
+# Let GKE use dynamic provising to automatically create persistent disk with GCE disk
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: memegen-pvc
+spec:
+  resources:
+    requests:
+      storage: 50Gi
+  volumeMode: Filesystem
+  # storageClassName: slow
+  accessModes:
+    - ReadWriteMany
+    # - ReadWriteOnce

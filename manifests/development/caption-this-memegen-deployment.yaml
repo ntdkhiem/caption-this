@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: memegen-deployment
+  labels:
+    app: memegen
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: memegen
+  template:
+    metadata:
+      labels:
+        app: memegen
+    spec:
+      volumes:
+        - name: assets-volume
+          persistentVolumeClaim:
+            claimName: memegen-pvc
+      containers:
+        - name: memegen
+          image: gcr.io/dev-airlock-311420/memegen:v1.1
+          command:
+            - "python"
+            - "run.py"
+          volumeMounts:
+            - mountPath: "/usr/src/app/images"
+              name: assets-volume
+          env:
+            - name: FLASK_SECRET_KEY
+              valueFrom:
+                  secretKeyRef:
+                    name: caption-this-secret
+                    key: FLASK_SECRET_KEY
+            - name: FLASK_ENV
+              valueFrom:
+                  configMapKeyRef:
+                    name: caption-this-configmap
+                    key: FLASK_ENV
+            - name: IMAGES_DIRECTORY
+              value: "/usr/src/app/images/"
+              # valueFrom:
+              #     configMapKeyRef:
+              #       name: caption-this-configmap
+              #       key: IMAGES_DIRECTORY
+            - name: PORT
+              value: "5000"
+            # - name: DOMAIN
+            #   valueFrom:
+            #       configMapKeyRef:
+            #         name: caption-this-configmap
+            #         key: DOMAIN
+          ports:
+            - containerPort: 5000
+          resources:
+              requests:
+                memory: "500Mi"
+                cpu: "300m"
+              limits:
+                memory: "1Gi"
+                cpu: "600m" 

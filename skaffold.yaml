@@ -1,0 +1,40 @@
+apiVersion: skaffold/v2beta15
+kind: Config
+metadata:
+  name: caption-this
+build:
+  artifacts:
+    # - image: gcr.io/dev-airlock-311420/frontend
+    #   context: services/frontend
+    #   docker:
+    #     dockerfile: Dockerfile
+    - image: gcr.io/dev-airlock-311420/game
+      context: services/game
+      docker:
+        dockerfile: Dockerfile
+    - image: gcr.io/dev-airlock-311420/memegen
+      context: services/memegen
+      docker:
+        dockerfile: Dockerfile
+  tagPolicy:
+    sha256: {}
+deploy:
+  kubectl:
+    manifests:
+      # - manifests/development/caption-this-GKE-storage-class.yaml
+      - manifests/development/caption-this-configmaps.yaml
+      - manifests/development/caption-this-secrets.yaml
+      # - manifests/development/caption-this-game-backend-config
+      - manifests/development/caption-this-limit-range
+      - manifests/development/caption-this-pvc-memegen.yaml
+      - manifests/development/caption-this-celery-deployment.yaml
+      # - manifests/development/caption-this-frontend-deployment.yaml
+      # - manifests/development/caption-this-frontend-service.yaml
+      - manifests/development/caption-this-game-deployment.yaml
+      - manifests/development/caption-this-game-service.yaml
+      - manifests/development/caption-this-memegen-deployment.yaml
+      - manifests/development/caption-this-memegen-service.yaml
+      # - manifests/development/caption-this-namespace.yaml
+      - manifests/development/caption-this-redis-deployment.yaml
+      - manifests/development/caption-this-redis-service.yaml
+      - manifests/development/caption-this-ingress.yaml

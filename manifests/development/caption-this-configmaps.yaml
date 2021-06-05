@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: caption-this-configmap
+data:
+  FLASK_ENV: "development"
+  REDIS_URL: "redis://redis:6379/0"
+  MESSAGE_QUEUE_URL: "redis://redis"
+  CELERY_BROKER_URL: "redis://redis"
+  # MEMEGEN TODO: put fonts/ and templates/ as GCE Storage persistent volume
+  # DOMAIN: "caption-this.io"
+  # IMAGES_DIRECTORY: "/etc/images"
