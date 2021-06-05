@@ -1,6 +1,6 @@
-[submodule "services/frontend"]
-	path = services/frontend
-	url = https://github.com/ntdkhiem/captionthis_frontend
+# [submodule "services/frontend"]
+# 	path = services/frontend
+# 	url = https://github.com/ntdkhiem/captionthis_frontend
 [submodule "services/game"]
 	path = services/game
 	url = https://github.com/ntdkhiem/captionthis_game
