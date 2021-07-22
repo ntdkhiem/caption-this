@@ -22,7 +22,7 @@ services:
     celery:
         build:
             target: base
-        command: ["/bin/sh", "-c", "./celery.sh"]
+        command: /bin/sh -c "celery --app=captionthis worker --loglevel=DEBUG & celery --app=captionthis beat --loglevel=DEBUG & tail -f /dev/null"
         env_file:
             - ./.env.dev
     memegen:
