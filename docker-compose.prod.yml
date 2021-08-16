@@ -1,34 +1,27 @@
 # This is a compose file for production
-version: '3.8'
+version: "3.8"
 
 services:
-    frontend:
-        build:
-            dockerfile: Dockerfile.prod
-        command: gunicorn --log-file=- -w 2 --bind 0.0.0.0:5000 manage:app
-        env_file:
-            - ./.env.prod
-    game:
-        build:
-            dockerfile: Dockerfile.prod
-        # only use 1 worker due to eventlet's requirement.
-        command: gunicorn --log-file=- --worker-class eventlet -w 1 --bind 0.0.0.0:5000 manage:app
-        env_file:
-            - ./.env.prod
-    celery:
-        build:
-            dockerfile: Dockerfile.prod
-        command: ["/bin/sh", "-c", "./celery.sh"]
-        env_file:
-            - ./.env.prod
-    memegen:
-        build:
-            dockerfile: Dockerfile.prod
-        command: gunicorn --log-file=- --worker-class sanic.worker.GunicornWorker -w 2 --bind 0.0.0.0:5000 app:app
-        env_file:
-            - ./.env.prod
-        volumes:
-            - memes_dir:/home/app/images/
-    nginx:
-        volumes:
-            - memes_dir:/usr/src/app/images/
+  game:
+    build:
+      dockerfile: Dockerfile.prod
+    # only use 1 worker due to eventlet's requirement.
+    command: gunicorn --log-file=- --worker-class eventlet -w 1 --bind 0.0.0.0:5000 manage:app
+    env_file:
+      - ./.env.prod
+    volumes:
+      - memes_dir:/home/app/images/
+  celery:
+    build:
+      dockerfile: Dockerfile.prod
+    command: /bin/sh -c "celery --app=captionthis worker --loglevel=DEBUG & celery --app=captionthis beat --loglevel=DEBUG & tail -f /dev/null"
+    env_file:
+      - ./.env.prod
+  memegen:
+    build:
+      dockerfile: Dockerfile.prod
+    command: gunicorn --log-file=- --worker-class sanic.worker.GunicornWorker -w 2 --bind 0.0.0.0:5000 app:app
+    env_file:
+      - ./.env.prod
+    volumes:
+      - memes_dir:/home/app/images/
