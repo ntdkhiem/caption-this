@@ -1,38 +1,30 @@
 # This is a compose file for development
-version: '3.8'
+version: "3.8"
 
 services:
-    # frontend:
-    #     build:
-    #         target: base
-    #     command: python manage.py run -h 0.0.0.0 -p 5000
-    #     env_file:
-    #         - ./.env.dev
-    #     volumes:
-    #         - ./services/frontend:/usr/src/app
-    game:
-        build:
-            target: base
-        command: python manage.py run -h 0.0.0.0 -p 5000
-        env_file:
-            - ./.env.dev
-        volumes:
-            - ./services/game:/usr/src/app
-            - memes_dir:/usr/src/app/images/
-    celery:
-        build:
-            target: base
-        command: /bin/sh -c "celery --app=captionthis worker --loglevel=DEBUG & celery --app=captionthis beat --loglevel=DEBUG & tail -f /dev/null"
-        env_file:
-            - ./.env.dev
-    memegen:
-        build:
-            target: base
-        command: python run.py
-        volumes:
-            - memes_dir:/usr/src/app/images/
-        environment:
-            - DEBUG=1
-    redis:
-        ports:
-            - "6379:6379"
+  game:
+    build:
+      target: base
+    command: python manage.py run -h 0.0.0.0 -p 5000
+    env_file:
+      - ./.env.dev
+    volumes:
+      - ./services/game:/usr/src/app
+      - memes_dir:/usr/src/app/images/
+  celery:
+    build:
+      target: base
+    command: /bin/sh -c "celery --app=captionthis worker --loglevel=DEBUG & celery --app=captionthis beat --loglevel=DEBUG & tail -f /dev/null"
+    env_file:
+      - ./.env.dev
+  memegen:
+    build:
+      target: base
+    command: python run.py
+    volumes:
+      - memes_dir:/usr/src/app/images/
+    environment:
+      - DEBUG=1
+  redis:
+    ports:
+      - "6379:6379"

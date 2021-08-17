@@ -36,7 +36,6 @@ services:
       - 80:80
     depends_on:
       - game
-      - memegen
     networks:
       - local-network
   redis:
