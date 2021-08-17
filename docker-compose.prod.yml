@@ -25,3 +25,11 @@ services:
       - ./.env.prod
     volumes:
       - memes_dir:/home/app/images/
+  nginx:
+    build:
+      target: production
+    ports:
+      - 443:443
+    volumes:
+      # Follow instructions from DigitalOcean deployment
+      - /data/certs:/etc/nginx/certs
