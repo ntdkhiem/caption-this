@@ -11,12 +11,14 @@ services:
       - ./.env.prod
     volumes:
       - memes_dir:/home/app/images/
+
   celery:
     build:
       dockerfile: Dockerfile.prod
     command: /bin/sh -c "celery --app=captionthis worker --loglevel=DEBUG & celery --app=captionthis beat --loglevel=DEBUG & tail -f /dev/null"
     env_file:
       - ./.env.prod
+
   memegen:
     build:
       dockerfile: Dockerfile.prod
@@ -25,6 +27,7 @@ services:
       - ./.env.prod
     volumes:
       - memes_dir:/home/app/images/
+
   nginx:
     build:
       target: production
@@ -32,4 +35,17 @@ services:
       - 443:443
     volumes:
       # Follow instructions from DigitalOcean deployment
-      - /data/certs:/etc/nginx/certs
+      - certbot-web:/var/www/html # For validation challengers
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - dhparam:/etc/ssl/certs
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - certbot-web:/var/www/html
+    depends_on:
+      - nginx
+    command: certonly --webroot --webroot-path=/var/www/html --email ppkhiemnguyen@gmail.com --agree-tos --no-eff-email --force-renewal -d captionthis.me  -d www.captionthis.me

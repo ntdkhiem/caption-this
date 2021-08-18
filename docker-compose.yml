@@ -1,50 +1,70 @@
 version: "3.8"
 
-networks:
-  local-network:
-    driver: bridge
 services:
   game:
     build:
       context: ./services/game
+    restart: unless-stopped
     expose:
       - 5000
     networks:
-      - local-network
+      - app-network
     depends_on:
       - redis
       - memegen
+
   celery:
     build:
       context: ./services/game
+    restart: unless-stopped
     depends_on:
       - redis
     networks:
-      - local-network
+      - app-network
+
   memegen:
     build:
       context: ./services/memegen
+    restart: unless-stopped
     expose:
       - 5000
     networks:
-      - local-network
+      - app-network
+
   nginx:
     build:
       context: ./services/nginx
       target: base
+      #restart: unless-stopped
     ports:
       - 80:80
     depends_on:
       - game
     networks:
-      - local-network
+      - app-network
+
   redis:
     command: ["redis-server", "--bind", "redis", "--port", "6379"]
     image: redis:6.2-alpine
     expose:
       - 6379
     networks:
-      - local-network
+      - app-network
+
 
 volumes:
   memes_dir:
+  certbot-etc:
+  certbot-var:
+  certbot-web:
+  dhparam:
+          driver: local
+          driver_opts:
+                  type: none
+                  device: /root/caption-this/dhparam
+                  o: bind
+
+
+networks:
+  app-network:
+    driver: bridge
