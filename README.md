@@ -11,7 +11,7 @@ The crowning glory awaits the victor at the end of all contests, unofficially be
 - A _memer_ gets a new picture, and your task is to create the most creative and humorous caption that can crack even the most serious person in the room.
 - _Voter_! Your role is to rate the caption using a 5-point system. Be fair in your scoring, as everyone's counting on your judgment when you step into the shoes of the _memer_ :)
 
-## Demo
+## Demo (click to watch)
 
 <a href="https://drive.google.com/file/d/1OTQgFsREk5B-b6GyxswJK9pVIPTMDrFb/view?usp=sharing"><img src="https://drive.google.com/uc?export=view&id=15DqbXiJHe24HmJ50IHHZNIVahs5cpqKt" style="width: 500px; max-width: 100%; height: auto" title="Click to watch the video." /></a>
 
