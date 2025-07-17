@@ -24,7 +24,6 @@ The crowning glory awaits the victor at the end of all contests, unofficially be
 3. `make all-up`
 
 ### Deployment
-- This project is fully containerized using Docker and orchestrated by Kubernetes and Skaffold. (see `manifests/`)
+The system is architected as a set of loosely coupled services deployed on Kubernetes, enabling horizontal scaling, resilience, and real‑time collaboration between players.
 
-### Testing
-- This project is fully tested with unit test, integration test, and end-to-end test.
+Under the hood, the backend is built with Flask and exposed via REST and WebSocket APIs. A Redis‑backed service powers low‑latency, real‑time events—such as new caption submissions and live voting updates. Each core domain (image service, frontend service, scoring/voting service) is isolated as its own containerized microservice, managed and load‑balanced with NGINX.
